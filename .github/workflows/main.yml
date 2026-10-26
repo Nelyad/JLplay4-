@@ -1,8 +1,11 @@
-- name: Preparar Java
-    uses: actions/setup-java@v4
-    with:
-      distribution: temurin
-      java-version: '17'
+name: Compilar JLplay4 APK
+
+'on':
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - master- name: Preparar Java
 
   - name: Buscar ZIP
     run: |
