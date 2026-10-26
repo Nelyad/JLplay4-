@@ -1,19 +1,18 @@
- - name: Preparar Java
+- name: Preparar Java
     uses: actions/setup-java@v4
     with:
       distribution: temurin
       java-version: '17'
 
-  - name: Ver archivos del repositorio
+  - name: Buscar ZIP
     run: |
-      ls -la
-      unzip -l JLplay4_Android_Starter_v2.zip
+      find . -maxdepth 3 -type f -name '*.zip'
 
   - name: Extraer proyecto
     run: |
+      mkdir -p proyecto
       unzip -o JLplay4_Android_Starter_v2.zip -d proyecto
-      find proyecto -name settings.gradle.kts -print
-      find proyecto -name build.gradle.kts -print
+      find proyecto -type f -name settings.gradle.kts
 
   - name: Preparar Gradle
     uses: gradle/actions/setup-gradle@v4
@@ -23,12 +22,12 @@
   - name: Compilar APK
     run: |
       cd proyecto
-      PROJECT_DIR="$(find . -name settings.gradle.kts -printf '%h\n' | head -n 1)"
-      if [ -z "$PROJECT_DIR" ]; then
-        echo "No se encontró settings.gradle.kts"
+      GRADLE_FILE="$(find . -name settings.gradle.kts -print -quit)"
+      if [ -z "$GRADLE_FILE" ]; then
+        echo "No se encontró settings.gradle.kts dentro del ZIP"
         exit 1
       fi
-      cd "$PROJECT_DIR"
+      cd "$(dirname "$GRADLE_FILE")"
       gradle assembleDebug
 
   - name: Guardar APK
